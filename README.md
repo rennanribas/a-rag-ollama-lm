@@ -1,19 +1,48 @@
-# AI RAG Agent
+# MCP Configuration for AI RAG Agent
 
-A sophisticated domain-specific RAG (Retrieval-Augmented Generation) system that combines web crawling, incremental indexing with LlamaIndex, and free LLM alternatives (Gemini, Ollama) to provide accurate, up-to-date answers about specific technical domains.
+Paste this JSON configuration into your Trae AI MCP settings:
 
-## Features
+```json
+{
+  "mcpServers": {
+    "ai-rag-agent": {
+      "command": "python3",
+      "args": ["/Users/rennanribas/Projects/ai-rag-agent/run_mcp.py"],
+      "env": {
+        "TRAE_AI": "true"
+      }
+    }
+  }
+}
+```
 
-- Free LLM Support: Use Gemini (free API) or Ollama (local) instead of paid OpenAI
-- Asynchronous Web Crawling: Efficiently crawls documentation websites with respect for robots.txt and rate limiting
-- Incremental Indexing: Uses LlamaIndex with ChromaDB for efficient vector storage and retrieval
-- Multiple LLM Providers: Support for Gemini, Ollama, and OpenAI with easy switching
-- Cost Optimization: Free embeddings with HuggingFace, optional paid upgrades
-- Incremental Updates: Only processes changed content, saving time and resources
-- FastAPI Service: RESTful API for easy integration with external applications
-- Conversation Context: Maintains conversation history for better contextual responses
-- Pre-configured Domains: Ready-to-use configurations for iOS, Swift, and other popular documentation sites
-- Integration Ready: Seamless integration with Claude 4 Sonnet in Trae AI
+## Instructions:
+
+1. Copy the `ai-rag-agent` object from the `mcpServers` section above
+2. Paste it into your Trae AI MCP configuration file
+3. **IMPORTANT**: Update the path in `args` to match your project location:
+   - Replace `/Users/rennanribas/Projects/ai-rag-agent/run_mcp.py` with your actual project path
+   - Example: `/Users/yourname/Projects/ai-rag-agent/run_mcp.py`
+4. The server will automatically start in background mode for Trae AI compatibility
+
+## Server Endpoints:
+
+- **Health Check**: `http://localhost:8001/health`
+- **API Documentation**: `http://localhost:8001/docs`
+- **Query Endpoint**: `http://localhost:8001/query`
+
+## Environment Setup:
+
+Make sure you have a `.env` file with your API keys:
+
+```env
+LLM_PROVIDER=gemini
+GEMINI_API_KEY=your_gemini_api_key
+EMBEDDING_PROVIDER=huggingface
+EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+API_HOST=0.0.0.0
+API_PORT=8001
+```
 
 ## Quick Start
 

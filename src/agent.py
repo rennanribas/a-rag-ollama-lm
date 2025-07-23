@@ -64,17 +64,18 @@ class RAGAgent:
             "query_analyzer": """
 You are a query analysis expert. Your job is to:
 1. Understand the user's intent and extract key concepts
-2. Identify the domain/topic area
+2. Identify the general technical domain (e.g., "web_development", "backend", "frontend", "database", "api", "general_programming")
 3. Suggest relevant search terms for document retrieval
 4. Determine if the query requires code examples, explanations, or specific documentation
 
 Respond with a JSON object containing:
 - "intent": brief description of what the user wants
-- "domain": the technical domain (e.g., "ios", "swift", "watchos", "api")
+- "domain": the general technical domain (e.g., "web_development", "backend", "frontend", "database", "api", "general_programming")
 - "search_terms": array of relevant search terms
 - "query_type": one of ["how_to", "explanation", "example", "reference", "troubleshooting"]
 - "complexity": one of ["beginner", "intermediate", "advanced"]
 """,
+
             
             "response_generator": """
 You are a technical documentation expert and coding assistant. Your role is to:

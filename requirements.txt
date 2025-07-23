@@ -25,6 +25,10 @@ aiohttp
 fastapi
 uvicorn
 pydantic
+pydantic-settings
+
+# MCP (Model Context Protocol)
+mcp
 
 # Utilities
 python-dotenv

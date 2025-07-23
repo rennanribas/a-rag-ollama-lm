@@ -1,7 +1,10 @@
 """Main CLI interface for the AI RAG Agent."""
 
 import asyncio
+import os
 import sys
+import threading
+import time
 from pathlib import Path
 from typing import List, Optional
 
@@ -43,20 +46,68 @@ def cli(log_level: str):
 
 
 @cli.command()
-@click.option('--host', default='localhost', help='API host')
-@click.option('--port', default=8000, help='API port')
-@click.option('--reload', is_flag=True, help='Enable auto-reload')
-def serve(host: str, port: int, reload: bool):
+@click.option('--host', default=settings.api_host, help='API host')
+@click.option('--port', default=settings.api_port, help='API port')
+@click.option('--reload', default=settings.api_reload, help='Enable auto-reload')
+@click.option('--background', is_flag=True, help='Run server in background (for IDEs like Trae AI)')
+def serve(host: str, port: int, reload: bool, background: bool):
     """Start the RAG agent API server."""
     console.print(f"Starting AI RAG Agent API server on {host}:{port}", style="bold green")
     
-    uvicorn.run(
-        "src.api:app",
-        host=host,
-        port=port,
-        reload=reload,
-        log_level=settings.log_level.lower()
+    # Auto-detect if running in Trae AI or similar IDE environment
+    is_ide_environment = (
+        background or 
+        os.getenv('TRAE_AI') == 'true' or 
+        os.getenv('IDE_MODE') == 'true' or
+        'trae' in os.getenv('TERM_PROGRAM', '').lower()
     )
+    
+    if is_ide_environment:
+        # Run server in background thread for IDE compatibility
+        def run_server():
+            uvicorn.run(
+                "src.api:app",
+                host=host,
+                port=port,
+                reload=False,  # Disable reload in background mode to avoid signal issues
+                log_level=settings.log_level.lower()
+            )
+        
+        server_thread = threading.Thread(target=run_server, daemon=True)
+        server_thread.start()
+        
+        console.print(f"✅ Server started in background on http://{host}:{port}", style="bold green")
+        console.print("📝 Server is running in background mode for IDE compatibility", style="yellow")
+        console.print(f"🌐 Access the API at: http://{host}:{port}/docs", style="cyan")
+        console.print(f"❤️  Health check: http://{host}:{port}/health", style="cyan")
+        
+        # Keep the main thread alive for a moment to show status
+        time.sleep(2)
+        
+        # Check if server is responding
+        try:
+            import requests
+            response = requests.get(f"http://{host}:{port}/health", timeout=5)
+            if response.status_code == 200:
+                console.print("✅ Server is responding to health checks", style="bold green")
+            else:
+                console.print(f"⚠️  Server responded with status {response.status_code}", style="yellow")
+        except ImportError:
+            console.print("💡 Install 'requests' to enable health checks: pip install requests", style="dim")
+        except Exception as e:
+            console.print(f"⚠️  Could not verify server status: {e}", style="yellow")
+        
+        console.print("🎉 Server setup complete! You can now use the API.", style="bold green")
+        
+    else:
+        # Run server normally (blocking mode)
+        uvicorn.run(
+            "src.api:app",
+            host=host,
+            port=port,
+            reload=reload,
+            log_level=settings.log_level.lower()
+        )
 
 
 @cli.command()
@@ -306,6 +357,24 @@ def domains():
     
     console.print(table)
     console.print("\n💡 Use: [bold]ai-rag crawl-domain <domain_name>[/bold] to crawl a specific domain")
+
+
+@cli.command()
+def mcp():
+    """Start the MCP (Model Context Protocol) server for IDE integration."""
+    import asyncio
+    from .mcp_server import main as mcp_main
+    
+    console.print("Starting AI RAG Agent MCP Server...", style="bold green")
+    console.print("This server provides MCP tools for IDE integration", style="yellow")
+    
+    try:
+        asyncio.run(mcp_main())
+    except KeyboardInterrupt:
+        console.print("\n👋 MCP Server stopped", style="bold green")
+    except Exception as e:
+        console.print(f"❌ MCP Server failed: {e}", style="bold red")
+        raise
 
 
 @cli.command()

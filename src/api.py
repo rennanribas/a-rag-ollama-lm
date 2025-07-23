@@ -276,6 +276,55 @@ async def get_domain_configs():
                 "https://platform.openai.com/docs"
             ],
             "max_depth": 3
+        },
+        "nestjs": {
+            "name": "NestJS Documentation",
+            "urls": [
+                "https://docs.nestjs.com/"
+            ],
+            "max_depth": 3
+        },
+        "nodejs": {
+            "name": "Node.js Documentation",
+            "urls": [
+                "https://nodejs.org/docs/latest/api/"
+            ],
+            "max_depth": 3
+        },
+        "typescript": {
+            "name": "TypeScript Documentation",
+            "urls": [
+                "https://www.typescriptlang.org/docs/"
+            ],
+            "max_depth": 3
+        },
+        "sequelize": {
+            "name": "Sequelize Documentation",
+            "urls": [
+                "https://sequelize.org/docs/v6/"
+            ],
+            "max_depth": 3
+        },
+        "sqlserver": {
+            "name": "SQL Server Documentation",
+            "urls": [
+                "https://learn.microsoft.com/en-us/sql/"
+            ],
+            "max_depth": 3
+        },
+        "swagger": {
+            "name": "Swagger Documentation",
+            "urls": [
+                "https://swagger.io/docs/"
+            ],
+            "max_depth": 3
+        },
+        "redoc": {
+            "name": "Redoc Documentation",
+            "urls": [
+                "https://redocly.com/docs/redoc/"
+            ],
+            "max_depth": 3
         }
     }
 
