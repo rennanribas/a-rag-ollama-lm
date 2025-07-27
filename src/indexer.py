@@ -195,7 +195,7 @@ class IncrementalIndexer:
         
         return updated_count
     
-    def query(self, query_text: str, top_k: int = 5, similarity_threshold: float = 0.7) -> Dict:
+    def query(self, query_text: str, top_k: int = 5, similarity_threshold: float = 0.0) -> Dict:
         """Query the index and return relevant documents."""
         if not self.index:
             raise RuntimeError("Index not initialized")
@@ -213,7 +213,9 @@ class IncrementalIndexer:
             # Extract source documents
             source_docs = []
             if hasattr(response, 'source_nodes'):
-                for node in response.source_nodes:
+                logger.info(f"Found {len(response.source_nodes)} source nodes")
+                for i, node in enumerate(response.source_nodes):
+                    logger.info(f"Node {i}: score={node.score}, title={node.metadata.get('title', 'Unknown')}")
                     if node.score >= similarity_threshold:
                         source_docs.append({
                             "url": node.metadata.get("url", "Unknown"),
@@ -222,6 +224,10 @@ class IncrementalIndexer:
                             "score": node.score,
                             "metadata": node.metadata
                         })
+            else:
+                logger.warning("No source_nodes found in response")
+            
+            logger.info(f"Returning {len(source_docs)} documents after filtering")
             
             return {
                 "response": str(response),
@@ -287,7 +293,11 @@ class IncrementalIndexer:
         try:
             # Clear ChromaDB collection
             if self.vector_store and hasattr(self.vector_store, '_collection'):
-                self.vector_store._collection.delete()
+                # Get all document IDs first
+                collection = self.vector_store._collection
+                result = collection.get()
+                if result['ids']:
+                    collection.delete(ids=result['ids'])
             
             # Recreate storage
             self._initialize_storage()

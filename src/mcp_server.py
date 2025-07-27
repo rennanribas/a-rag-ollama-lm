@@ -59,7 +59,7 @@ async def query_rag(query: str, domain: str = None, session_id: str = "mcp") -> 
     )
     
     # Execute query
-    response = await agent.query(query_context)
+    response = await agent.process_query(query_context)
     return response.answer
 
 

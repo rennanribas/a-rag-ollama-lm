@@ -131,7 +131,7 @@ class WebCrawler:
         lines = [line.strip() for line in text_content.split("\n") if line.strip()]
         clean_content = "\n".join(lines)
         
-        if len(clean_content) < 100:  # Skip pages with minimal content
+        if len(clean_content) < 50:  # Skip pages with minimal content
             logger.debug(f"Skipping {url}: insufficient content")
             return None
         

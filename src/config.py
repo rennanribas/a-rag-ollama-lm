@@ -41,6 +41,11 @@ class Settings(BaseSettings):
     user_agent: str = Field("AI-RAG-Agent/1.0", env="USER_AGENT")
     verify_ssl: bool = Field(False, env="VERIFY_SSL")  # Set to False to bypass SSL verification
     
+    # Documentation URLs Configuration
+    docs_urls: str = Field("", env="DOCS_URLS")
+    crawl_depth: int = Field(2, env="CRAWL_DEPTH")
+    auto_update_interval: str = Field("24h", env="AUTO_UPDATE_INTERVAL")
+    
     # API Configuration
     api_host: str = Field("localhost", env="API_HOST")
     api_port: int = Field(8000, env="API_PORT")
